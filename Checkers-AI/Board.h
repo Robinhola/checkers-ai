@@ -11,27 +11,72 @@ inline bool operator==(const Coord& a, const Coord& b) {
 	return a.x == b.x && a.y == b.y;
 }
 
+inline Coord operator+(const Coord& a, const Coord& b) {
+	return {a.x + b.x , a.y + b.y};
+}
+
+inline Coord operator*(const Coord& a, int v) {
+	return {a.x * v , a.y * v};
+}
+
+inline Coord operator*(int v, const Coord& a) {
+	return {a.x * v , a.y * v};
+}
+
+enum class Color {
+	NONE  = 0,
+	BLACK = 1,
+	WHITE = 2,
+	BLACK_QUEEN = 8,
+	WHITE_QUEEN = 9,
+};
+
+inline bool areOppositeColor(Color a, Color b) {
+	switch (a)
+	{
+	case Color::NONE:
+		return false;
+
+	case Color::BLACK:
+	case Color::BLACK_QUEEN:
+		return b == Color::WHITE || b == Color::WHITE_QUEEN;
+
+	case Color::WHITE:
+	case Color::WHITE_QUEEN:
+		return b == Color::BLACK || b == Color::BLACK_QUEEN;
+	}
+
+	_ASSERT(false);
+}
 
 class Board
 {
-	using Line = std::vector<int>;
+	using Line = std::vector<Color>;
 	using Grid = std::vector<Line>;
 
 	Grid d_grid;
 	
 public:
-	enum Direction {
+	enum class Direction {
 		TLeft  = 0,
 		TRight = 1,
 		BLeft  = 2,
 		BRight = 3,
 	};
 
-	struct BoardMove {
+	struct Move {
 		// A move on the board is entirely characterised by the following data: 
 		Coord     pieceCoord;
 		Direction direction;
 		int       value;
+	};
+
+	using BoardMoves = std::vector<Move>;
+
+	struct Piece {
+		// Likewise, a piece is entirely characterised by:
+		Coord coord;
+		Color color;
 	};
 
 	Board(Coord dimensions);
@@ -39,11 +84,23 @@ public:
 	Coord dimensions() const;
 
 	const Grid& grid() const;
+	Color grid(Coord position) const;
 
-	bool MovePiece(BoardMove candidate);
+	bool isMoveValid(Move candidate) const;
 
-	bool isMoveValid(BoardMove candidate);
+	void validMoves(Coord coord, BoardMoves *boardMoves) const;
+
+	void placePiece(Piece);
+
+	bool movePiece(Move candidate);
 };
+
+
+inline bool operator==(const Board::Move& a, const Board::Move& b) {
+	return a.pieceCoord == b.pieceCoord &&
+		   a.direction  == b.direction &&
+		   a.value      == b.value;
+}
 
 
 inline std::ostream& operator<<(std::ostream& os, const Board& board) {
@@ -53,7 +110,7 @@ inline std::ostream& operator<<(std::ostream& os, const Board& board) {
 		os << "\n|";
 
 		for (auto ite = lineIte->begin(); ite != lineIte->end(); ++ite) {
-			os << *ite << "|";
+			os << int(*ite) << "|";
 		}
 	}
 
