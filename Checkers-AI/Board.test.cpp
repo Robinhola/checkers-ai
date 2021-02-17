@@ -3,7 +3,6 @@
 
 
 bool testConstructBoard() {
-
 	for (auto& d : { Coord{1,1}, Coord{10, 10}, Coord{2, 2}, Coord{8,8} }) {
 		Board X(d);
 
