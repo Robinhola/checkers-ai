@@ -1,25 +1,79 @@
 #include "Board.h"
 #include "Board.test.h"
 
+namespace {
+	bool assert(bool condition) {
+		_ASSERT(condition);
+		return condition;
+	}
+}
 
 bool testConstructBoard() {
+	bool success = true;
+
 	for (auto& d : { Coord{1,1}, Coord{10, 10}, Coord{2, 2}, Coord{8,8} }) {
 		Board X(d);
 
-		_ASSERT(d == X.dimensions());
-		_ASSERT(X.grid().size() == d.y);
-		_ASSERT(X.grid()[0].size() == d.x);
+		success &= assert(d == X.dimensions());
+		success &= assert(X.grid().size() == d.y);
+		success &= assert(X.grid()[0].size() == d.x);
 	}
 
-	return true;
+	return success;
+}
+
+bool testIsMoveValid() {
+	bool success = true;
+
+	Board X{ {8, 8} };
+
+	X.placePiece({ {1, 1}, Color::WHITE });
+
+	// Valid
+	success &= assert(X.isMoveValid(Board::Move{ {1, 1}, Board::Direction::TLeft,  1}));
+	success &= assert(X.isMoveValid(Board::Move{ {1, 1}, Board::Direction::TRight, 1}));
+
+	// Invalid
+	success &= assert(!X.isMoveValid(Board::Move{ {1, 1}, Board::Direction::BLeft,  1}));
+	success &= assert(!X.isMoveValid(Board::Move{ {1, 1}, Board::Direction::BRight, 1}));
+	success &= assert(!X.isMoveValid(Board::Move{ {1, 1}, Board::Direction::TRight, 2}));
+	success &= assert(!X.isMoveValid(Board::Move{ {1, 1}, Board::Direction::TRight, 3}));
+	success &= assert(!X.isMoveValid(Board::Move{ {1, 1}, Board::Direction::TLeft,  2}));
+	success &= assert(!X.isMoveValid(Board::Move{ {1, 1}, Board::Direction::TLeft,  3}));
+
+	// We add a Black piece:
+	X.placePiece({ {2, 2}, Color::BLACK });
+
+	// Capturing is mandatory but this will only be reflected in the `validMoves` method
+	Board::BoardMoves moves;
+	Board::Move expected{ { 1, 1 }, Board::Direction::TRight, 2 };
+
+	X.validMoves({ 1, 1 }, &moves);
+	success &= assert(moves.size() == 1);
+	success &= assert(moves[0] == expected);
+
+	// We add a white piece instead:
+	X.placePiece({ {2, 2}, Color::WHITE });
+
+	// Now the piece can only move left
+	moves.clear();
+	expected = { { 1, 1 }, Board::Direction::TLeft, 1 };
+
+	X.validMoves({ 1, 1 }, &moves);
+	success &= assert(moves.size() == 1);
+	success &= assert(moves[0] == expected);
+
+	return success;
 }
 
 bool testSimpleMovePieces() {
+	bool success = true;
+
 	Board X(Coord{ 8, 8 });
 
-	X.placePiece({ { 0, 0 }, Color::BLACK });
+	X.placePiece({ { 0, 0 }, Color::WHITE });
 
-	_ASSERT(X.grid({ 0, 0 }) == Color::BLACK);
+	success &= assert(X.grid({ 0, 0 }) == Color::WHITE);
 
 	// FIRST MOVE
 	Board::BoardMoves moves;
@@ -27,14 +81,14 @@ bool testSimpleMovePieces() {
 
 	Board::Move expectedFirstMove{ { 0, 0 }, Board::Direction::TRight, 1 };
 
-	_ASSERT(moves.size() == 1);
-	_ASSERT(moves[0] == expectedFirstMove);
+	success &= assert(moves.size() == 1);
+	success &= assert(moves[0] == expectedFirstMove);
 
 	bool firstMoveResult = X.movePiece(expectedFirstMove);
 
-	_ASSERT(firstMoveResult);
-	_ASSERT(X.grid({ 0, 0 }) == Color::NONE);
-	_ASSERT(X.grid({ 1, 1 }) == Color::BLACK);
+	success &= assert(firstMoveResult);
+	success &= assert(X.grid({ 0, 0 }) == Color::NONE);
+	success &= assert(X.grid({ 1, 1 }) == Color::WHITE);
 
 	// SECOND MOVE
 	moves.clear();
@@ -45,24 +99,24 @@ bool testSimpleMovePieces() {
 		{ { 1, 1 }, Board::Direction::TRight, 1 },
 	};
 
-	_ASSERT(moves.size() == 2);
-	_ASSERT(moves == expectedSecondMoves);
+	success &= assert(moves.size() == 2);
+	success &= assert(moves == expectedSecondMoves);
 
 	bool SecondMoveResult = X.movePiece(expectedSecondMoves[0]);
 
-	_ASSERT(SecondMoveResult);
-	_ASSERT(X.grid({ 0, 0 }) == Color::NONE);
-	_ASSERT(X.grid({ 1, 1 }) == Color::NONE);
-	_ASSERT(X.grid({ 0, 2 }) == Color::BLACK);
+	success &= assert(SecondMoveResult);
+	success &= assert(X.grid({ 0, 0 }) == Color::NONE);
+	success &= assert(X.grid({ 1, 1 }) == Color::NONE);
+	success &= assert(X.grid({ 0, 2 }) == Color::WHITE);
 
-	return true;
+	return success;
 }
-
 
 bool testBoard() {
 	bool success = true;
 
 	success &= testConstructBoard();
+	success &= testIsMoveValid();
 	success &= testSimpleMovePieces();
 
 	return success;

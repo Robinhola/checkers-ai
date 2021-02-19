@@ -2,30 +2,7 @@
 
 #include <vector>
 
-
-Board::Board(Coord dimensions)
-: d_grid(dimensions.y)
-{
-	for (auto& line: d_grid) {
-		line.assign(dimensions.x, Color::NONE);
-	}
-}
-
-Coord Board::dimensions() const {
-	return {
-		int(d_grid[0].size()),
-		int(d_grid.size()),
-	};
-}
-
-const Board::Grid& Board::grid() const {
-	return d_grid;
-}
-
-Color Board::grid(Coord position) const
-{
-	return d_grid[position.y][position.x];
-}
+namespace {
 
 Coord directionToCoord(Board::Direction direction) {
 	if (direction == Board::Direction::TRight) return {  1 ,  1 };
@@ -60,6 +37,38 @@ bool inBound(const Board& board, Coord destination) {
 	       0 <= destination.y && destination.y < board.dimensions().y;
 }
 
+void AddIfValid(const Board& board, Board::Move&& move, Board::BoardMoves *container) {
+	if (board.isMoveValid(move)) {
+		container->push_back(move);
+	}
+}
+
+} // End of Anonymous namespace
+
+Board::Board(Coord dimensions)
+: d_grid(dimensions.y)
+{
+	for (auto& line: d_grid) {
+		line.assign(dimensions.x, Color::NONE);
+	}
+}
+
+Coord Board::dimensions() const {
+	return {
+		int(d_grid[0].size()),
+		int(d_grid.size()),
+	};
+}
+
+const Board::Grid& Board::grid() const {
+	return d_grid;
+}
+
+Color Board::grid(Coord position) const
+{
+	return d_grid[position.y][position.x];
+}
+
 bool Board::isMoveValid(Move candidate) const {
 	Color candidateColor = grid(candidate.pieceCoord);
 	Coord destination    = findDestination(candidate);
@@ -87,31 +96,22 @@ bool Board::isMoveValid(Move candidate) const {
 	return isValid;
 }
 
-void AddIfValid(const Board& board, Board::Move&& move, Board::BoardMoves *container) {
-	if (board.isMoveValid(move)) {
-		container->push_back(move);
-	}
-}
-
 void Board::validMoves(Coord coord, BoardMoves *boardMoves) const
 {
 	// Whites are at the bottom -> they go to the top
 	// Blacks are at the top    -> they go to the bottom
+	std::vector<Board::Direction> validDirections;
 
 	switch (grid(coord)) {
 	case Color::NONE:
 		return;
 	case Color::BLACK:
-		AddIfValid(*this, {coord, Direction::BLeft,  1 }, boardMoves);
-		AddIfValid(*this, {coord, Direction::BLeft,  2 }, boardMoves);
-		AddIfValid(*this, {coord, Direction::BRight, 1 }, boardMoves);
-		AddIfValid(*this, {coord, Direction::BRight, 2 }, boardMoves);
+		validDirections.emplace_back(Direction::BLeft);
+		validDirections.emplace_back(Direction::BRight);
 		break;
 	case Color::WHITE:
-		AddIfValid(*this, {coord, Direction::TLeft,  1 }, boardMoves);
-		AddIfValid(*this, {coord, Direction::TLeft,  2 }, boardMoves);
-		AddIfValid(*this, {coord, Direction::TRight, 1 }, boardMoves);
-		AddIfValid(*this, {coord, Direction::TRight, 2 }, boardMoves);
+		validDirections.emplace_back(Direction::TLeft);
+		validDirections.emplace_back(Direction::TRight);
 		break;
 	case Color::BLACK_QUEEN:
 		break;
@@ -120,6 +120,14 @@ void Board::validMoves(Coord coord, BoardMoves *boardMoves) const
 	default:
 		break;
 	}
+
+	// Eating is mandatory so we return if any eat move is in the array before
+	// looking at the other moves.
+	for (auto& d : validDirections) AddIfValid(*this, {coord, d, 2 }, boardMoves);
+
+	if (boardMoves->size() > 0) return;
+
+	for (auto& d : validDirections) AddIfValid(*this, {coord, d, 1 }, boardMoves);
 }
 
 void Board::placePiece(Board::Piece piece) {
