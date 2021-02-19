@@ -1,4 +1,9 @@
+﻿#ifndef BOARD_H
+#define BOARD_H
+
+#include <iostream>
 #include <ostream>
+#include <string>
 #include <vector>
 
 
@@ -23,12 +28,16 @@ inline Coord operator*(int v, const Coord& a) {
 	return {a.x * v , a.y * v};
 }
 
+inline std::ostream& operator<<(std::ostream& os, const Coord& coord) {
+	return os << "(" << coord.x << ", " << coord.y << ")";
+}
+
 enum class Color {
 	NONE  = 0,
-	BLACK = 1,
-	WHITE = 2,
-	BLACK_QUEEN = 8,
-	WHITE_QUEEN = 9,
+	WHITE = 1,
+	BLACK = 2,
+	WHITE_QUEEN = 8,
+	BLACK_QUEEN = 9,
 };
 
 inline bool areOppositeColor(Color a, Color b) {
@@ -47,6 +56,7 @@ inline bool areOppositeColor(Color a, Color b) {
 	}
 
 	_ASSERT(false);
+	return false;
 }
 
 class Board
@@ -89,12 +99,28 @@ public:
 	bool isMoveValid(Move candidate) const;
 
 	void validMoves(Coord coord, BoardMoves *boardMoves) const;
+	BoardMoves validMoves(Coord coord) const;
+	BoardMoves validMoves(Color color) const;
 
 	void placePiece(Piece);
 
 	bool movePiece(Move candidate);
 };
 
+inline std::ostream& operator<<(std::ostream& os, const Board::Direction& direction) {
+	switch (direction)
+	{
+	case Board::Direction::TLeft:
+		return os << "NW";
+	case Board::Direction::TRight:
+		return os << "NE";
+	case Board::Direction::BLeft:
+		return os << "SW";
+	case Board::Direction::BRight:
+		return os << "SE";
+	}
+	return os;
+}
 
 inline bool operator==(const Board::Move& a, const Board::Move& b) {
 	return a.pieceCoord == b.pieceCoord &&
@@ -106,13 +132,29 @@ inline bool operator==(const Board::Move& a, const Board::Move& b) {
 inline std::ostream& operator<<(std::ostream& os, const Board& board) {
 	const auto& grid = board.grid();
 
-	for (auto lineIte = grid.begin(); lineIte != grid.end(); ++lineIte) {
+	for (auto lineIte = grid.rbegin(); lineIte != grid.rend(); ++lineIte) {
 		os << "\n|";
 
 		for (auto ite = lineIte->begin(); ite != lineIte->end(); ++ite) {
-			os << int(*ite) << "|";
+			if (*ite == Color::NONE) {
+				os << " ";
+			}
+			else {
+				os << int(*ite);
+			}
+
+			os << "|";
 		}
+
+		os << " - " << board.dimensions().y - 1 - int(lineIte - grid.rbegin());
 	}
 
-	return os << "\n";
+	os << "\n";
+	for (int i = 0; i < board.dimensions().x; ++i) {
+		os << " " << i;
+	}
+
+	return os << "\n\n";
 }
+
+#endif

@@ -112,12 +112,60 @@ bool testSimpleMovePieces() {
 	return success;
 }
 
+bool testIllegalMove() {
+	bool success = true;
+
+	Board X({8, 8});
+
+	Board::Piece piece{ { 5, 5 }, Color::WHITE };
+
+	X.placePiece(piece);
+
+	success &= assert(X.grid(piece.coord) == piece.color);
+	bool result = X.movePiece(Board::Move{ piece.coord, Board::Direction::BLeft, 1 });
+	success &= assert(!result);
+	success &= assert(X.grid(piece.coord) == piece.color);
+	success &= assert(X.grid(piece.coord + Coord{-1, -1}) == Color::NONE);
+
+	result = X.movePiece(Board::Move{ piece.coord, Board::Direction::TRight, 2 });
+	success &= assert(!result);
+	success &= assert(X.grid(piece.coord) == piece.color);
+	success &= assert(X.grid(piece.coord + Coord{2, 2}) == Color::NONE);
+
+	return success;
+}
+
+bool testEatPiece() {
+	bool success = true;
+
+	Board X({8, 8});
+	
+	Board::Piece piece{ { 5, 5 }, Color::WHITE };
+	Board::Piece toBeEaten{ { 6, 6 }, Color::BLACK };
+
+	X.placePiece(piece);
+	X.placePiece(toBeEaten);
+	
+	Board::BoardMoves moves;
+	X.validMoves(piece.coord, &moves);
+	success &= assert(moves.size() == 1);
+	success &= assert(X.movePiece(moves.front()));
+	success &= assert(X.grid(piece.coord) == Color::NONE);
+	success &= assert(X.grid(toBeEaten.coord) == Color::NONE);
+	success &= assert(X.grid(toBeEaten.coord + Coord{1, 1}) == piece.color);
+
+	success &= assert(toBeEaten.coord + Coord{ 1, 1 } == Coord{7, 7});
+	return success;
+}
+
 bool testBoard() {
 	bool success = true;
 
 	success &= testConstructBoard();
 	success &= testIsMoveValid();
 	success &= testSimpleMovePieces();
+	success &= testIllegalMove();
+	success &= testEatPiece();
 
 	return success;
 }

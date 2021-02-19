@@ -1,5 +1,6 @@
 #include "Board.h"
 
+#include <algorithm>
 #include <vector>
 
 namespace {
@@ -11,6 +12,7 @@ Coord directionToCoord(Board::Direction direction) {
 	if (direction == Board::Direction::BLeft)  return { -1 , -1 };
 
 	_ASSERT(false);
+	return { 0, 0 };
 }
 
 std::vector<Coord> generatePath(Board::Move move) {
@@ -121,13 +123,42 @@ void Board::validMoves(Coord coord, BoardMoves *boardMoves) const
 		break;
 	}
 
-	// Eating is mandatory so we return if any eat move is in the array before
-	// looking at the other moves.
 	for (auto& d : validDirections) AddIfValid(*this, {coord, d, 2 }, boardMoves);
-
-	if (boardMoves->size() > 0) return;
-
 	for (auto& d : validDirections) AddIfValid(*this, {coord, d, 1 }, boardMoves);
+
+	// Eating is mandatory so if there are any eat move, we remove the normal moves.
+	if (std::any_of(boardMoves->begin(), boardMoves->end(), [](const Move& m) { return m.value > 1; })) {
+		boardMoves->erase(
+			std::remove_if(boardMoves->begin(),
+						   boardMoves->end(),
+				           [](const Move& m) { return m.value < 2; }
+			),
+			boardMoves->end()
+		);
+	}
+}
+
+Board::BoardMoves Board::validMoves(Coord coord) const
+{
+	BoardMoves moves;
+
+	validMoves(coord, &moves);
+
+	return std::move(moves);
+}
+
+Board::BoardMoves Board::validMoves(Color color) const
+{
+	BoardMoves moves;
+
+	for (int x = 0; x < dimensions().x; ++x) {
+		for (int y = 0; y < dimensions().y; ++y) {
+			Coord c{ x, y };
+			if (grid(c) == color) validMoves(c, &moves);
+		}
+	}
+
+	return std::move(moves);
 }
 
 void Board::placePiece(Board::Piece piece) {

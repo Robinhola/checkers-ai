@@ -3,7 +3,9 @@
 
 #include <iostream>
 
+#include "Board.h"
 #include "Board.test.h"
+#include "Engine.h"
 
 int main()
 {
@@ -11,6 +13,38 @@ int main()
 
     std::cout << "Running tests\n";
     std::cout << "Test board: " << (testBoard() ? "SUCCESS" : "FAILURE") << std::endl;
+
+    std::cout << "Let's play!" << std::endl;
+
+    Board board({ 8, 8 });
+    board.placePiece(Board::Piece{ Coord{0, 0}, Color::WHITE });
+    board.placePiece(Board::Piece{ Coord{2, 0}, Color::WHITE });
+    board.placePiece(Board::Piece{ Coord{4, 0}, Color::WHITE });
+    board.placePiece(Board::Piece{ Coord{6, 0}, Color::WHITE });
+    board.placePiece(Board::Piece{ Coord{1, 1}, Color::WHITE });
+    board.placePiece(Board::Piece{ Coord{3, 1}, Color::WHITE });
+    board.placePiece(Board::Piece{ Coord{5, 1}, Color::WHITE });
+    board.placePiece(Board::Piece{ Coord{7, 1}, Color::WHITE });
+    board.placePiece(Board::Piece{ Coord{0, 2}, Color::WHITE });
+    board.placePiece(Board::Piece{ Coord{2, 2}, Color::WHITE });
+    board.placePiece(Board::Piece{ Coord{4, 2}, Color::WHITE });
+    board.placePiece(Board::Piece{ Coord{6, 2}, Color::WHITE });
+
+    board.placePiece(Board::Piece{ Coord{1, 7}, Color::BLACK });
+    board.placePiece(Board::Piece{ Coord{3, 7}, Color::BLACK });
+    board.placePiece(Board::Piece{ Coord{5, 7}, Color::BLACK });
+    board.placePiece(Board::Piece{ Coord{7, 7}, Color::BLACK });
+    board.placePiece(Board::Piece{ Coord{0, 6}, Color::BLACK });
+    board.placePiece(Board::Piece{ Coord{2, 6}, Color::BLACK });
+    board.placePiece(Board::Piece{ Coord{4, 6}, Color::BLACK });
+    board.placePiece(Board::Piece{ Coord{6, 6}, Color::BLACK });
+    board.placePiece(Board::Piece{ Coord{1, 5}, Color::BLACK });
+    board.placePiece(Board::Piece{ Coord{3, 5}, Color::BLACK });
+    board.placePiece(Board::Piece{ Coord{5, 5}, Color::BLACK });
+    board.placePiece(Board::Piece{ Coord{7, 5}, Color::BLACK });
+    
+    Engine engine(&board);
+    engine.play();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
