@@ -11,7 +11,6 @@ Coord directionToCoord(Board::Direction direction) {
 	if (direction == Board::Direction::BRight) return {  1 , -1 };
 	if (direction == Board::Direction::BLeft)  return { -1 , -1 };
 
-	_ASSERT(false);
 	return { 0, 0 };
 }
 

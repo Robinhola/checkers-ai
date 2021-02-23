@@ -55,7 +55,6 @@ inline bool areOppositeColor(Color a, Color b) {
 		return b == Color::BLACK || b == Color::BLACK_QUEEN;
 	}
 
-	_ASSERT(false);
 	return false;
 }
 

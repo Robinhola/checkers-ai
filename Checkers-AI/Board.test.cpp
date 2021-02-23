@@ -3,7 +3,6 @@
 
 namespace {
 	bool assert(bool condition) {
-		_ASSERT(condition);
 		return condition;
 	}
 }
