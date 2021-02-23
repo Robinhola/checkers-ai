@@ -6,23 +6,23 @@
 #include <vector>
 
 struct Score {
-	int white;
-	int black;
+    int white;
+    int black;
 };
 
 class Engine
 {
-	Board* d_board;
-	Color  d_turn;
-	
-	std::vector<std::string> d_gridToDraw;
+    Board* d_board;
+    Color  d_turn;
+    
+    std::vector<std::string> d_gridToDraw;
 
-	void updateGridToDraw(const Board::BoardMoves& possibleMoves);
+    void updateGridToDraw(const Board::BoardMoves& possibleMoves);
 
 public:
-	Engine(Board* board);
+    Engine(Board* board);
 
-	int play();
+    int play();
 
-	std::ostream& draw(std::ostream& os);
+    std::ostream& draw(std::ostream& os);
 };

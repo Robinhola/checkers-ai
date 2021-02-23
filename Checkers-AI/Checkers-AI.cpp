@@ -4,15 +4,11 @@
 #include <iostream>
 
 #include "Board.h"
-#include "Board.test.h"
 #include "Engine.h"
 
 int main()
 {
     std::cout << "Hello World!\n";
-
-    std::cout << "Running tests\n";
-    std::cout << "Test board: " << (testBoard() ? "SUCCESS" : "FAILURE") << std::endl;
 
     std::cout << "Let's play!" << std::endl;
 
@@ -42,7 +38,7 @@ int main()
     board.placePiece(Board::Piece{ Coord{3, 5}, Color::BLACK });
     board.placePiece(Board::Piece{ Coord{5, 5}, Color::BLACK });
     board.placePiece(Board::Piece{ Coord{7, 5}, Color::BLACK });
-    
+
     Engine engine(&board);
     engine.play();
 }
@@ -50,7 +46,7 @@ int main()
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
 
-// Tips for Getting Started: 
+// Tips for Getting Started:
 //   1. Use the Solution Explorer window to add/manage files
 //   2. Use the Team Explorer window to connect to source control
 //   3. Use the Output window to see build output and other messages
@@ -59,12 +55,12 @@ int main()
 //   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
 
 // Checkers AI -
-// Game engine - needs to let players play the game 
+// Game engine - needs to let players play the game
 // AI needs to read the game and take decision to play it
 //
-// Game engine -> display a board, display pieces, let you move pieces 
+// Game engine -> display a board, display pieces, let you move pieces
 
 // https://en.wikipedia.org/wiki/Draughts
 
-// Grid 
+// Grid
 // 0 1 0 1 0 1

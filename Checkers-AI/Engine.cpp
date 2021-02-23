@@ -44,7 +44,7 @@ void displayMoves(const Board::BoardMoves& moves, const std::vector<std::string>
     for (size_t i = 0; i < moves.size(); ++i) {
         int x = moves[i].pieceCoord.x;
         int y = moves[i].pieceCoord.y;
-        std::cout << "Move " << gridToDraw[y][x] << " to " << moves[i].direction 
+        std::cout << "Move " << gridToDraw[y][x] << " to " << moves[i].direction
             << " [" << i << "]"
             << "\n";
     }
@@ -92,8 +92,8 @@ int Engine::play()
 
         int choice = -1;
         while (choice < 0 || int(possibleMoves.size()) <= choice) {
-			std::cout << "Enter your choice (numbers only or -1 to quit): ";
-			std::cin >> choice;
+    		std::cout << "Enter your choice (numbers only or -1 to quit): ";
+    		std::cin >> choice;
 
             if (choice == -1) return 0;
         }
@@ -101,11 +101,11 @@ int Engine::play()
         d_board->movePiece(possibleMoves[choice]);
 
         d_turn = oppositeColor(d_turn);
-		possibleMoves = d_board->validMoves(d_turn);
+    	possibleMoves = d_board->validMoves(d_turn);
     }
 
-	updateGridToDraw(possibleMoves);
-	draw(std::cout);
+    updateGridToDraw(possibleMoves);
+    draw(std::cout);
 
     displayVictory(getScores(*d_board));
     std::cout << "The end!" << std::endl;
@@ -153,20 +153,20 @@ void Engine::updateGridToDraw(const Board::BoardMoves& possibleMoves) {
 
 std::ostream& Engine::draw(std::ostream& os)
 {
-	for (auto lineIte = d_gridToDraw.rbegin(); lineIte != d_gridToDraw.rend(); ++lineIte) {
-		os << "\n|";
+    for (auto lineIte = d_gridToDraw.rbegin(); lineIte != d_gridToDraw.rend(); ++lineIte) {
+    	os << "\n|";
 
-		for (auto ite = lineIte->begin(); ite != lineIte->end(); ++ite) {
-			os << *ite << "|";
-		}
+    	for (auto ite = lineIte->begin(); ite != lineIte->end(); ++ite) {
+    		os << *ite << "|";
+    	}
 
-		os << " - " << d_board->dimensions().y - 1 - int(lineIte - d_gridToDraw.rbegin());
-	}
+    	os << " - " << d_board->dimensions().y - 1 - int(lineIte - d_gridToDraw.rbegin());
+    }
 
-	os << "\n";
-	for (int i = 0; i < d_board->dimensions().x; ++i) {
-		os << " " << i;
-	}
+    os << "\n";
+    for (int i = 0; i < d_board->dimensions().x; ++i) {
+    	os << " " << i;
+    }
 
-	return os << "\n\n";
+    return os << "\n\n";
 }
