@@ -1,7 +1,13 @@
 .vs/
+CMakeCache.txt
+CMakeFiles/
 Checkers-AI.sln
 Checkers-AI/Checkers-AI.vcxproj
 Checkers-AI/Checkers-AI.vcxproj.filters
 Checkers-AI/Checkers-AI.vcxproj.user
 Checkers-AI/Debug/
+Checkers-ai
 Debug/
+Makefile
+cmake_install.cmake
+tests
