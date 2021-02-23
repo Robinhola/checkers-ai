@@ -13,6 +13,14 @@ int main()
     std::cout << "Let's play!" << std::endl;
 
     Board board({ 8, 8 });
+    // _#_#_#_#
+    // #_#_#_#_
+    // _#_#_#_#
+    // ________
+    // ________
+    // +_+_+_+_
+    // _+_+_+_+
+    // +_+_+_+_
     board.placePiece(Board::Piece{ Coord{0, 0}, Color::WHITE });
     board.placePiece(Board::Piece{ Coord{2, 0}, Color::WHITE });
     board.placePiece(Board::Piece{ Coord{4, 0}, Color::WHITE });
